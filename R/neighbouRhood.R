@@ -158,11 +158,22 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
   return(list(dat_obj, dat_rel))
 }
 
+#' shuffle_labels
+#'
+#' This shuffles the labels by group in a standardized dat_labels table
+#' @param  dat_labels a labels table as formated by the prepare_tables function. Must have columns 'label', 'ObjectID', 'group'
+#' @return returns a copy of dat_labels with shuffeled labels within the group
 #' @export
+#'
 shuffle_labels <- function(dat_labels){
   return(dat_labels[ , .(label=sample(label), ObjectID=ObjectID), by=group])
 }
 
+#' Applies the labels on a a relationship table
+#' @param   dat_labels a labels table as formated by the prepare_tables function. Must have columns 'label', 'ObjectID', 'group'
+#' @param dat_rel a relationship table as formated by the prepare_tables function. Must have columns "First Object ID", "Second Object ID"
+#'
+#' @return a copy of the dat_rel table with additional coluns FirstLabel and SecondLabel
 #' @export
 apply_labels <- function(dat_labels, dat_rel){
   labels = dat_labels[, get(LABEL)]
@@ -176,22 +187,12 @@ apply_labels <- function(dat_labels, dat_rel){
     setnames(c('fx', 'sx'), c(FIRSTLABEL, SECONDLABEL))
 }
 
-#' @export
-aggregate_classic_wrong <- function(dat_nb){
-  dcast(dat_nb,paste0(GROUP, '+', FIRSTLABEL, '~', SECONDLABEL),
-        value.var = COUNTVAR,
-        fun.aggregate=length, fill=0) %>%
-    melt(id.vars=c(GROUP, FIRSTLABEL),
-         variable.name=SECONDLABEL,
-         value.name=COUNTVAR)% >%
-    dcast.data.table(paste0(GROUP, '+', SECONDLABEL, '~', FIRSTLABEL),
-                     value.var = COUNTVAR,
-                     fun.aggregate=mean, fill=0) %>%
-    melt.data.table(id.vars=c(GROUP, SECONDLABEL),
-                    variable.name=FIRSTLABEL,
-                    value.name=COUNTVAR)
-}
 
+#' Calculates the average anothter neightourhood test
+#'
+#' Specifically: How many neightbours of type B does a cell of type A have.
+#' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
+#' @export a statistics with columns group, Firstlabel, Secondlabel, ct
 #' @export
 aggregate_classic<- function(dat_nb){
   dcast.data.table(dat_nb, paste0(GROUP, '+', FIRSTLABEL, '+`', FIRSTOBJID, '`~', SECONDLABEL),
@@ -208,7 +209,30 @@ aggregate_classic<- function(dat_nb){
                     value.name=COUNTVAR)
 }
 
+#' Calculate yet another neightourhood statistics
+#' This calculates 'what are the average number of interactions between two labels
 #' @export
+aggregate_classic_wrong <- function(dat_nb){
+  dcast(dat_nb,paste0(GROUP, '+', FIRSTLABEL, '~', SECONDLABEL),
+        value.var = COUNTVAR,
+        fun.aggregate=length, fill=0) %>%
+    melt(id.vars=c(GROUP, FIRSTLABEL),
+         variable.name=SECONDLABEL,
+         value.name=COUNTVAR)% >%
+    dcast.data.table(paste0(GROUP, '+', SECONDLABEL, '~', FIRSTLABEL),
+                     value.var = COUNTVAR,
+                     fun.aggregate=mean, fill=0) %>%
+    melt.data.table(id.vars=c(GROUP, SECONDLABEL),
+                    variable.name=FIRSTLABEL,
+                    value.name=COUNTVAR)
+}
+
+
+#' Calculates HistoCAT style permutation test
+#'
+#' Calculates: How many many neightbours of type B has a cell of type A given it has at least one neigthbour of type B?
+#' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
+#' @export a statistics with columns group, Firstlabel, Secondlabel, ct
 aggregate_histo <- function(dat_nb){
   dat_temp = dat_nb[, .(ct=.N), by=.(group, FirstLabel, SecondLabel, `First Object ID`)]
   dat_temp[, .(ct=mean(ct)), by=.(group, FirstLabel, SecondLabel)]

@@ -8,3 +8,4 @@ Description: Reproduces the neightbourhood analysis from the HistoCAT paper in R
 License: AGPL-3
 Encoding: UTF-8
 LazyData: true
+Depends: data.table
