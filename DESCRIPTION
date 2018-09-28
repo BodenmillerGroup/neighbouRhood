@@ -9,3 +9,4 @@ License: AGPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: data.table
+RoxygenNote: 6.1.0

@@ -1,0 +1,126 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(data.table)
+library(dplyr)
+library(magrittr)
+library(dtplyr)
+library(ggplot2)
+library(parallel)
+library(neighbouRhood)
+
+```
+# This describes the neighbouRhood analysis
+
+This code aims to reproduce the neightbouRhood analysis as implemented in the HistoCAT paper. It workv
+```{r}
+fn_cells = '/home/vitoz/Data/Analysis/201805_cp2_processing/cpout/cell.csv'
+fn_relationship =  '/home/vitoz/Data/Analysis/201805_cp2_processing/cpout/Object relationships.csv'
+
+n_perm = 1000
+```
+
+```{r}
+dat_cells = fread(fn_cells)
+dat_relation = fread(fn_relationship)
+```
+
+```{r}
+dat_cells[, label := sample.int(10, size=.N, replace = T)]
+dat_cells[, group := ImageNumber]
+```
+
+
+```{r}
+d = prepare_tables(dat_cells, dat_relation)
+
+
+dat_baseline = apply_labels(d[[1]], d[[2]]) %>%
+  aggregate_classic()
+
+```
+
+```{r}
+
+dat_perm = rbindlist(mclapply(1:n_perm, function(x){
+  dat_labels = shuffle_labels(d[[1]])
+  apply_labels(dat_labels, d[[2]]) %>%
+    aggregate_classic()
+},mc.cores = 10
+), idcol = 'run') 
+
+```
+
+
+```{r}
+ggplot(dat_perm %>% filter(group==1), aes(x=ct)) +
+  facet_grid(paste(FIRSTLABEL, SECONDLABEL, sep = '~'))+
+  geom_histogram() +
+  geom_vline(data=dat_baseline%>% filter(group==1),aes(xintercept=ct), color='red')
+```
+
+
+```{r}
+dat_p <- calc_p_vals(dat_baseline, dat_perm, n_perm = 1000) 
+
+``` 
+
+```{r}
+pmat = dcast(dat_p, 'FirstLabel ~ SecondLabel', value.var = 'sigval', fun.aggregate = sum,
+             fill=0, drop=F)
+
+rname = pmat$FirstLabel
+
+pmat = pmat %>%
+  select(-c('FirstLabel')) %>%
+  as.matrix()
+
+row.names(pmat) <- rname
+```
+
+
+```{r}
+library(gplots)
+library(RColorBrewer)
+cols = rev(brewer.pal(11,'Spectral'))
+cmap = colorRampPalette(cols)
+
+
+hr <- hclust(dist(pmat), method="ward.D")
+heatmap.2(pmat,
+          #symm = T,
+          #scale ='none',
+          Colv = as.dendrogram(hr),
+          Rowv = as.dendrogram(hr),
+          trace = "none",
+          col=cmap(75),
+          density.info ='none',
+          #Colv =NA,
+          #keyorient=2,                                                  
+          #sepwidth = c(0,0),
+          cexRow=0.6,
+          cexCol=0.6,
+          margins=c(4,4)
+          
+          #comments = data.frame(names = row.names(tab_Prot))
+)
+```
+
+
+
+```{r}
+dat_p %>%
+  ggplot(aes(x=p_gt)) +
+  facet_wrap('group')+
+  geom_histogram()
+```
+
+```{r}
+dat_p %>%
+  ggplot(aes(x=p_lt)) +
+  facet_wrap('group')+
+  geom_histogram()
+```
