@@ -1,7 +1,7 @@
-library(data.table)
-library(dplyr)
 library(magrittr)
+library(dplyr)
 library(dtplyr)
+library(data.table)
 
 IMGNR = 'ImageNumber'
 OBJNR = 'ObjectNumber'
@@ -92,8 +92,8 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
   # set the objectname if needed
   if (has_objname == F){
     dat_obj %<>%
-      dplyr::mutate(x = objname) %>%
-      setnames('x',col_objname)
+      dplyr::mutate(x = objname)
+    setnames(dat_obj, 'x',col_objname)
   } else{
     dat_obj %<>%
       filter(get(col_objname) == objname)
@@ -103,14 +103,14 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
   if (has_group == F){
     col_group = GROUP
     dat_obj %<>%
-      dplyr::mutate(x = get(col_imnr)) %>%
-      setnames('x',col_group)
+      dplyr::mutate(x = get(col_imnr))
+    setnames(dat_obj, 'x',col_group)
+
 
   }
 
   # rename all the columns
-  dat_obj %<>%
-    setnames(
+  setnames(dat_obj,
       c(col_imnr, col_objnr, col_label, col_group,
         col_objname),
       c(IMGNR, OBJNR, LABEL, GROUP,
@@ -133,22 +133,26 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
   # give new ids
   dat_obj %<>%
     mutate(x = 1:.N) %>%
-    setnames('x', OBJID)
+    as.data.table()
+  setnames(dat_obj, 'x', OBJID)
 
   dat_rel %<>%
     merge(dat_obj %>% select(c(IMGNR, OBJNR, OBJID, GROUP)),
           by.x=c(FIRSTIMAGENUMBER, FIRSTOBJNUMBER),
           by.y=c(IMGNR, OBJNR)
-    ) %>%
-    setnames(OBJID, FIRSTOBJID) %>%
+    )
+    setnames(dat_rel, OBJID, FIRSTOBJID)
+    dat_rel %<>%
     merge(dat_obj %>% select(c(IMGNR, OBJNR, OBJID)),
           by.x=c(SECONDIMAGENUMBER, SECONDOBJNUMBER),
           by.y=c(IMGNR, OBJNR)
-    ) %>%
-    setnames(OBJID, SECONDOBJID) %>%
+    )
+
+    setnames(dat_rel, OBJID, SECONDOBJID)
+    dat_rel %<>%
     select(c(GROUP, FIRSTOBJID, SECONDOBJID)) %>%
-    mutate(x=1) %>%
-    setnames('x', COUNTVAR)
+    mutate(x=1)
+    setnames(dat_rel, 'x', COUNTVAR)
 
 
   return(list(dat_obj, dat_rel))
