@@ -1,6 +1,11 @@
 ---
-title: "R Notebook"
-output: html_notebook
+author: "Name Surname"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteIndexEntry{Title of your vignette}
+  %\usepackage[UTF-8]{inputenc}
 ---
 
 ```{r}
@@ -11,7 +16,8 @@ library(dtplyr)
 library(ggplot2)
 library(parallel)
 library(neighbouRhood)
-
+library(gplots)
+library(RColorBrewer)
 ```
 # This describes the neighbouRhood analysis
 
@@ -57,7 +63,7 @@ dat_perm = rbindlist(mclapply(1:n_perm, function(x){
 
 ```{r}
 ggplot(dat_perm %>% filter(group==1), aes(x=ct)) +
-  facet_grid(paste(FIRSTLABEL, SECONDLABEL, sep = '~'))+
+  facet_grid(FirstLabel~SecondLabel)+
   geom_histogram() +
   geom_vline(data=dat_baseline%>% filter(group==1),aes(xintercept=ct), color='red')
 ```
@@ -82,29 +88,19 @@ row.names(pmat) <- rname
 ```
 
 
-```{r}
-library(gplots)
-library(RColorBrewer)
+```{r fig.height=5, fig.width=5}
+
 cols = rev(brewer.pal(11,'Spectral'))
 cmap = colorRampPalette(cols)
 
 
 hr <- hclust(dist(pmat), method="ward.D")
 heatmap.2(pmat,
-          #symm = T,
-          #scale ='none',
           Colv = as.dendrogram(hr),
           Rowv = as.dendrogram(hr),
           trace = "none",
           col=cmap(75),
-          density.info ='none',
-          #Colv =NA,
-          #keyorient=2,                                                  
-          #sepwidth = c(0,0),
-          cexRow=0.6,
-          cexCol=0.6,
-          margins=c(4,4)
-          
+          density.info ='none'
           #comments = data.frame(names = row.names(tab_Prot))
 )
 ```
