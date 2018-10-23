@@ -2,6 +2,10 @@ library(magrittr)
 library(dplyr)
 library(dtplyr)
 library(data.table)
+#' @import magrittr
+#' @import data.table
+#' @importFrom  dplyr select filter mutate group_by summarise
+#' @import dtplyr
 
 IMGNR = 'ImageNumber'
 OBJNR = 'ObjectNumber'
@@ -208,23 +212,6 @@ aggregate_classic<- function(dat_nb){
                     value.name=COUNTVAR)
 }
 
-#' Calculate yet another neightourhood statistics
-#' This calculates 'what are the average number of interactions between two labels
-#' @export
-aggregate_classic_wrong <- function(dat_nb){
-  dcast(dat_nb,paste0(GROUP, '+', FIRSTLABEL, '~', SECONDLABEL),
-        value.var = COUNTVAR,
-        fun.aggregate=length, fill=0) %>%
-    melt(id.vars=c(GROUP, FIRSTLABEL),
-         variable.name=SECONDLABEL,
-         value.name=COUNTVAR)% >%
-    dcast.data.table(paste0(GROUP, '+', SECONDLABEL, '~', FIRSTLABEL),
-                     value.var = COUNTVAR,
-                     fun.aggregate=mean, fill=0) %>%
-    melt.data.table(id.vars=c(GROUP, SECONDLABEL),
-                    variable.name=FIRSTLABEL,
-                    value.name=COUNTVAR)
-}
 
 
 #' Calculates HistoCAT style permutation test
@@ -238,6 +225,24 @@ aggregate_histo <- function(dat_nb){
   dat_temp[, .(ct=mean(ct)), by=.(group, FirstLabel, SecondLabel)]
 }
 
+#' Calculates p-values from the permutation data as well as the baseline
+#' @param dat_baseline a baseline statistics table calculated by running the aggregate_* function on the unpermuted data
+#' @param dat_perm the permuatation data
+#' @param n_perm number of permuations used to calculate dat_perm
+#' @param p_tresh p value threshold to be used
+#' @return a table containing the results of the permutation test.
+#'         Columns:
+#'             group: group id
+#'             FirstLabel: first label
+#'             SecondLabel: second label
+#'             p_gt: fraction of permutations equal or bigger than baseline
+#'             p_lt: fraction of permutations equal or less than baseline
+#'             direction: it the p_lt smaller than p_gt?
+#'             p: the smaller p value of p_gt and p_lt
+#'             sig: it the p significant compared to the p_tresh?
+#'             sigval: -1=if sig and direction==False, 0=if not sig, 1=if sig and direction==True
+#'
+#'
 #' @export
 calc_p_vals<- function(dat_baseline, dat_perm, n_perm, p_tresh=0.01){
   dat_perm %>%
