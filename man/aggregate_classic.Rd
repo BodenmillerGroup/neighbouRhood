@@ -9,6 +9,9 @@ aggregate_classic(dat_nb)
 \arguments{
 \item{dat_nb}{a neightbourhood table with the labels applied with 'apply_labels'}
 }
+\value{
+a statistics with columns group, Firstlabel, Secondlabel, ct
+}
 \description{
 Specifically: How many neightbours of type B does a cell of type A have.
 }

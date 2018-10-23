@@ -164,7 +164,6 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
 #' @param  dat_labels a labels table as formated by the prepare_tables function. Must have columns 'label', 'ObjectID', 'group'
 #' @return returns a copy of dat_labels with shuffeled labels within the group
 #' @export
-#'
 shuffle_labels <- function(dat_labels){
   return(dat_labels[ , .(label=sample(label), ObjectID=ObjectID), by=group])
 }
@@ -192,7 +191,7 @@ apply_labels <- function(dat_labels, dat_rel){
 #'
 #' Specifically: How many neightbours of type B does a cell of type A have.
 #' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
-#' @export a statistics with columns group, Firstlabel, Secondlabel, ct
+#' @return a statistics with columns group, Firstlabel, Secondlabel, ct
 #' @export
 aggregate_classic<- function(dat_nb){
   dcast.data.table(dat_nb, paste0(GROUP, '+', FIRSTLABEL, '+`', FIRSTOBJID, '`~', SECONDLABEL),
@@ -232,7 +231,8 @@ aggregate_classic_wrong <- function(dat_nb){
 #'
 #' Calculates: How many many neightbours of type B has a cell of type A given it has at least one neigthbour of type B?
 #' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
-#' @export a statistics with columns group, Firstlabel, Secondlabel, ct
+#' @return a statistics with columns group, Firstlabel, Secondlabel, ct
+#' @export
 aggregate_histo <- function(dat_nb){
   dat_temp = dat_nb[, .(ct=.N), by=.(group, FirstLabel, SecondLabel, `First Object ID`)]
   dat_temp[, .(ct=mean(ct)), by=.(group, FirstLabel, SecondLabel)]

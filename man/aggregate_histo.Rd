@@ -9,6 +9,9 @@ aggregate_histo(dat_nb)
 \arguments{
 \item{dat_nb}{a neightbourhood table with the labels applied with 'apply_labels'}
 }
+\value{
+a statistics with columns group, Firstlabel, Secondlabel, ct
+}
 \description{
 Calculates: How many many neightbours of type B has a cell of type A given it has at least one neigthbour of type B?
 }
