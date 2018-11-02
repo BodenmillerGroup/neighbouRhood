@@ -2,7 +2,7 @@
 Adds an R implementation for the HistoCAT neightbourhood analysis that runs from CellProfiler output.
 
 
-Either clone and install the repository or install `git2r`, `devtools` and `getPass` to run:
+Either clone and install the repository or install  `devtools` to run:
 `
 devtools::install_github("BodenmillerGroup/neighbouRhood", auth_token = "abc")
 `
