@@ -162,7 +162,7 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
   return(list(dat_obj, dat_rel))
 }
 
-#' shuffle_labels
+#' Shuffle_labels
 #'
 #' This shuffles the labels by group in a standardized dat_labels table
 #' @param  dat_labels a labels table as formated by the prepare_tables function. Must have columns 'label', 'ObjectID', 'group'
@@ -191,9 +191,9 @@ apply_labels <- function(dat_labels, dat_rel){
 }
 
 
-#' Calculates the average anothter neightourhood test
+#' Calculates the the `average neightourhood`
 #'
-#' Specifically: How many neightbours of type B does a cell of type A have.
+#' Calculates: How many neightbours of type B does a cell of type A have on average.
 #' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
 #' @return a statistics with columns group, Firstlabel, Secondlabel, ct
 #' @export
@@ -214,7 +214,7 @@ aggregate_classic<- function(dat_nb){
 
 
 
-#' Calculates HistoCAT style permutation test
+#' Calculates HistoCAT-style neightbourhood statistics
 #'
 #' Calculates: How many many neightbours of type B has a cell of type A given it has at least one neigthbour of type B?
 #' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
