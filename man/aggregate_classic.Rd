@@ -2,7 +2,7 @@
 % Please edit documentation in R/neighbouRhood.R
 \name{aggregate_classic}
 \alias{aggregate_classic}
-\title{Calculates the average anothter neightourhood test}
+\title{Calculates the the `average neightourhood`}
 \usage{
 aggregate_classic(dat_nb)
 }
@@ -13,5 +13,5 @@ aggregate_classic(dat_nb)
 a statistics with columns group, Firstlabel, Secondlabel, ct
 }
 \description{
-Specifically: How many neightbours of type B does a cell of type A have.
+Calculates: How many neightbours of type B does a cell of type A have on average.
 }

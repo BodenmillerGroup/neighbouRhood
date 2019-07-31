@@ -2,7 +2,7 @@
 % Please edit documentation in R/neighbouRhood.R
 \name{aggregate_histo}
 \alias{aggregate_histo}
-\title{Calculates HistoCAT style permutation test}
+\title{Calculates HistoCAT-style neightbourhood statistics}
 \usage{
 aggregate_histo(dat_nb)
 }
