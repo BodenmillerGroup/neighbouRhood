@@ -2,6 +2,8 @@ library(magrittr)
 library(dplyr)
 library(dtplyr)
 library(data.table)
+.datatable.aware = TRUE
+
 #' @import magrittr
 #' @import data.table
 #' @importFrom  dplyr select filter mutate group_by summarise
