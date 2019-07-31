@@ -16,7 +16,7 @@ Either clone and install the repository or install  `devtools` to run:
 devtools::install_github("BodenmillerGroup/neighbouRhood")
 `
 ## Documentation
-Please follow the vignette https://github.com/BodenmillerGroup/neighbouRhood/blob/master/vignettes/example_permutation_analysis.Rmd 
+Please follow the vignette https://github.com/BodenmillerGroup/neighbouRhood/blob/master/vignettes/example_permutation_analysis.md 
 to see an explaination about the concept behind the package and how to use it.
 Also all individual functions are documented, ie the documentation can be displayed using: `?neightbouRhood`.
 
