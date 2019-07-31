@@ -2,7 +2,7 @@
 % Please edit documentation in R/neighbouRhood.R
 \name{shuffle_labels}
 \alias{shuffle_labels}
-\title{shuffle_labels}
+\title{Shuffle_labels}
 \usage{
 shuffle_labels(dat_labels)
 }
