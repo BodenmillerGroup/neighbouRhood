@@ -7,6 +7,12 @@ vignette: >
   %\VignetteIndexEntry{Example script}
   %\usepackage[UTF-8]{inputenc}
 ---
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
 
 ```{r}
 library(data.table)
@@ -60,9 +66,13 @@ This package has several steps:
 ## Specify the input
 
 This example uses example cellprofiler output and assignes random labels.
+
+Note that the number of permuatitions (n_perm) should likely be increased for a serious analysis.
 ```{r}
-fn_cells = '/home/vitoz/Data/Analysis/201805_cp2_processing/cpout/cell.csv'
-fn_relationship =  '/home/vitoz/Data/Analysis/201805_cp2_processing/cpout/Object relationships.csv'
+# path to a (potentially modified) cellprofiller like object measurements file
+fn_cells = system.file("extdata", "cell.csv", package = "neighbouRhood", mustWork = TRUE)
+# path to the Object relationships
+fn_relationship = system.file("extdata", "Object relationships.csv", package = "neighbouRhood", mustWork = TRUE)
 
 n_perm = 1000
 
@@ -72,17 +82,19 @@ ncores=10
 
 ## Start the analysis
 
-### 0) Load  and prepare
+### 0) Load and prepare
 ```{r}
 dat_cells = fread(fn_cells)
 dat_relation = fread(fn_relationship)
 ```
+
 
 Here we assign random lables. In a real example the label should eg be a cluster number
 ```{r}
 dat_cells[, label := sample.int(10, size=.N, replace = T)]
 dat_cells[, group := ImageNumber]
 ```
+
 
 ### 1) Prepare the data
 
@@ -102,7 +114,7 @@ dat_baseline = apply_labels(d[[1]], d[[2]]) %>%
 This will run the test using parallel computing.
 The name of the idcol does actually not matter.
 ```{r}
-
+set.seed(12312)
 dat_perm = rbindlist(mclapply(1:n_perm, function(x){
   dat_labels = shuffle_labels(d[[1]])
   apply_labels(dat_labels, d[[2]]) %>%
@@ -124,7 +136,7 @@ ggplot(dat_perm %>% filter(group==1), aes(x=ct)) +
 
 ### 4) Calculate the p-values
 ```{r}
-dat_p <- calc_p_vals(dat_baseline, dat_perm, n_perm = 1000) 
+dat_p <- calc_p_vals(dat_baseline, dat_perm, n_perm = 1000, p_tresh = 0.01) 
 
 ``` 
 
