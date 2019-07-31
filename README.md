@@ -1,5 +1,5 @@
 # neighbouRhood
-Adds an R implementation for the HistoCAT neightbourhood analysis that runs from CellProfiler output.
+Adds an R implementation for the HistoCAT neightbourhood analysis that runs from 'CellProfiler output' or 'CellProfiler output'-like data.
 
 ## Data requirements
 This require an edge representation of a neightbourhood graph as well as a table that associates each object with a label.
