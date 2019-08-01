@@ -218,7 +218,7 @@ aggregate_classic<- function(dat_nb){
 
 #' Calculates HistoCAT-style neightbourhood statistics
 #'
-#' Calculates: How many many neightbours of type B has a cell of type A given it has at least one neigthbour of type B?
+#' Calculates: How many many neightbours of type B has a cell of type A on average, given it has at least one neigthbour of type B?
 #' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
 #' @return a statistics with columns group, Firstlabel, Secondlabel, ct
 #' @export

@@ -40,22 +40,26 @@ It needs two tables:
 This package has several steps:
 
 1) Use the `prepare_tables` function to combine the objects and relationships table into a standardized more efficiently manipulatable format, check `?prepare_tables` for details.
+
    Important arguments:
-    dat_obj: the object data
-    dat_rel: the neightbourhood graph data
-    objname: the `ObjectName` assigned by cellprofiler
-    col_group: Over which entities should the permutation test be performed? Default: the Image column. This can be used to e.g. do the permutation test over all images from a patient
+    -dat_obj: the object data
+    -dat_rel: the neightbourhood graph data
+    -objname: the `ObjectName` assigned by cellprofiler
+    -col_group: Over which entities should the permutation test be performed? Default: the Image column. This can be used to e.g. do the permutation test over all images from a patient
       instead of per image.
 
 2) Apply the current labels to cells using `apply_labels` and calculate the baseline statistics using the statistics aggregation function of interest using an `aggregate_*` function.
+
    Currently two aggregation statistics are implemented:
-    - `aggregate_classic`
-    - `aggregate_histo`
+    - `aggregate_classic`: How many neightbours of type B does a cell of type A have on average?
+    - `aggregate_histo`: How many many neightbours of type B has a cell of type A on average, given it has at least one neigthbour of type B? 
+    
     Check the documentation to see the differences between the two.
     
     These aggregation statistics return 3 columns: Firstlabel, SecondLabel, ct (=calculated statistics)
     
 3) Repeatidly permute the lables using `shuffle_labels`, apply them using `apply_labels` and calculate the statistics for the randomized data using the same `aggregate_*` function.
+
    Use `data.table::rbindlist` to collate aggregation statistics from different runs
 
 4) Calculate p-values using the baseline statistics, the permutation statistics and the number of permutations using `calc_p_vals`
