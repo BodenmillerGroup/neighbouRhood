@@ -1,6 +1,6 @@
 ---
 author: "Vito Zanotelli"
-date: "2019-07-31"
+date: "2019-08-01"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::knitr}
@@ -38,10 +38,10 @@ This package has several steps:
 1) Use the `prepare_tables` function to combine the objects and relationships table into a standardized more efficiently manipulatable format, check `?prepare_tables` for details.
 
    Important arguments:
-    -dat_obj: the object data
-    -dat_rel: the neightbourhood graph data
-    -objname: the `ObjectName` assigned by cellprofiler
-    -col_group: Over which entities should the permutation test be performed? Default: the Image column. This can be used to e.g. do the permutation test over all images from a patient
+    - dat_obj: the object data
+    - dat_rel: the neightbourhood graph data
+    - objname: the `ObjectName` assigned by cellprofiler
+    - col_group: Over which entities should the permutation test be performed? Default: the Image column. This can be used to e.g. do the permutation test over all images from a patient
       instead of per image.
 
 2) Apply the current labels to cells using `apply_labels` and calculate the baseline statistics using the statistics aggregation function of interest using an `aggregate_*` function.
@@ -141,7 +141,7 @@ ggplot(dat_perm %>% filter(group==1), aes(x=ct)) +
 #> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![plot of chunk unnamed-chunk-19](figure/unnamed-chunk-19-1.png)
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
 
 ### 4) Calculate the p-values
 
@@ -192,6 +192,6 @@ heatmap.2(pmat,
 )
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
 
 
