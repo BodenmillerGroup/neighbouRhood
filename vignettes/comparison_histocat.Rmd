@@ -93,10 +93,9 @@ setnames(dat_j_avoid, c('CellType2new', 'CellType1new', 'Pvalue'),  c( 'FirstLab
 
 
 ```{r}
-
+dat_p[, ImageNumber := group]
 dat =dat_p %>%
-  mutate(ImageNumber= group) %>%
-  merge(dat_j_enr, all=T, by= c('ImageNumber','FirstLabel', 'SecondLabel')) %>%
+  merge(dat_j_enr, all=T, by = c('ImageNumber','FirstLabel', 'SecondLabel')) %>%
   merge(dat_j_avoid, all=T,  by= c('ImageNumber','FirstLabel', 'SecondLabel'))
 ```
 
@@ -135,4 +134,7 @@ ggplot(dat, aes(x=log10(p_gt), y=log10(p_jenr)))+
 ```
 
 
+```{r}
+sessionInfo()
+```
 

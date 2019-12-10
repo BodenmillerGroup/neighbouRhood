@@ -185,4 +185,7 @@ heatmap.2(pmat,
 )
 ```
 
+```{r}
+sessionInfo()
+```
 
