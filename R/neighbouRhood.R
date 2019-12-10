@@ -91,28 +91,20 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
   }
 
   # subset and copy the relevant part of the data
-  dat_obj %<>%
-    select(cols) %>%
-    copy()
+  dat_obj <- copy(dat_obj[,cols, with=F])
 
   # set the objectname if needed
   if (has_objname == F){
-    dat_obj %<>%
-      dplyr::mutate(x = objname)
-    setnames(dat_obj, 'x',col_objname)
+    dat_obj[,(col_objname) := objname]
   } else{
-    dat_obj %<>%
-      filter(get(col_objname) == objname)
+    dat_obj = dat_obj[get(col_objname) == objname]
+
   }
 
   # set the group if needed
   if (has_group == F){
     col_group = GROUP
-    dat_obj %<>%
-      dplyr::mutate(x = get(col_imnr))
-    setnames(dat_obj, 'x',col_group)
-
-
+    dat_obj[,(col_group):=get(col_imnr)]
   }
 
   # rename all the columns
@@ -127,38 +119,30 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
 
   # same for the relationship table
 
-  dat_rel %<>%
-    select(c(FIRSTOBJNAME, FIRSTIMAGENUMBER, FIRSTOBJNUMBER,
-             SECONDOBJNAME,SECONDIMAGENUMBER,  SECONDOBJNUMBER,
-             RELATIONSHIP)) %>%
-    filter(get(RELATIONSHIP) == relationship,
-           get(FIRSTOBJNAME) == objname,
-           get(SECONDOBJNAME) == objname) %>%
-    copy()
+  dat_rel = copy(dat_rel[(get(RELATIONSHIP) == relationship) &
+          (get(FIRSTOBJNAME) == objname)&
+          (get(SECONDOBJNAME) == objname), ][, c(FIRSTOBJNAME, FIRSTIMAGENUMBER, FIRSTOBJNUMBER,
+                                                 SECONDOBJNAME,SECONDIMAGENUMBER,  SECONDOBJNUMBER,
+                                                 RELATIONSHIP), with=F])
+
+
 
   # give new ids
-  dat_obj %<>%
-    mutate(x = 1:.N) %>%
-    as.data.table()
-  setnames(dat_obj, 'x', OBJID)
+  dat_obj[, (OBJID) := 1:.N]
 
-  dat_rel %<>%
-    merge(dat_obj %>% select(c(IMGNR, OBJNR, OBJID, GROUP)),
+  dat_rel <- merge(dat_rel, dat_obj[, c(IMGNR, OBJNR, OBJID, GROUP), with=F],
           by.x=c(FIRSTIMAGENUMBER, FIRSTOBJNUMBER),
           by.y=c(IMGNR, OBJNR)
     )
-    setnames(dat_rel, OBJID, FIRSTOBJID)
-    dat_rel %<>%
-    merge(dat_obj %>% select(c(IMGNR, OBJNR, OBJID)),
+  setnames(dat_rel, OBJID, FIRSTOBJID)
+  dat_rel <- merge(dat_rel, dat_obj[, c(IMGNR, OBJNR, OBJID), with=F],
           by.x=c(SECONDIMAGENUMBER, SECONDOBJNUMBER),
           by.y=c(IMGNR, OBJNR)
     )
 
-    setnames(dat_rel, OBJID, SECONDOBJID)
-    dat_rel %<>%
-    select(c(GROUP, FIRSTOBJID, SECONDOBJID)) %>%
-    mutate(x=1)
-    setnames(dat_rel, 'x', COUNTVAR)
+  setnames(dat_rel, OBJID, SECONDOBJID)
+  dat_rel[, (COUNTVAR) := 1]
+  dat_rel <- dat_rel[, c(GROUP, FIRSTOBJID, SECONDOBJID), with=F]
 
 
   return(list(dat_obj, dat_rel))
@@ -186,10 +170,9 @@ apply_labels <- function(dat_labels, dat_rel){
   labvec = rep(labels[1], max(objid))
   labvec[objid] = labels
 
-  dat_rel %>%
-    mutate(fx = labvec[get(FIRSTOBJID)],
-           sx = labvec[get(SECONDOBJID)]) %>%
-    setnames(c('fx', 'sx'), c(FIRSTLABEL, SECONDLABEL))
+  dat_rel[, (FIRSTLABEL) := labvec[get(FIRSTOBJID)]]
+  dat_rel[, (SECONDLABEL) := labvec[get(SECONDOBJID)]]
+  dat_rel
 }
 
 
@@ -247,19 +230,20 @@ aggregate_histo <- function(dat_nb){
 #'
 #' @export
 calc_p_vals<- function(dat_baseline, dat_perm, n_perm, p_tresh=0.01){
-  dat_perm %>%
-    merge(dat_baseline %>%
-            select(c(FIRSTLABEL, SECONDLABEL, GROUP, COUNTVAR)), by=c(FIRSTLABEL, SECONDLABEL, GROUP),
-          suffixes = c("_perm", "_obs"),all=T) %>%
-    mutate(ct_perm=replace(ct_perm, is.na(ct_perm), 0),
-           ct_obs=replace(ct_obs, is.na(ct_obs), 0)
-    ) %>%
-    group_by(group, FirstLabel, SecondLabel) %>%
-    summarise(p_gt=ifelse(max(ct_obs)==0, 1,(sum(ct_perm>=ct_obs)+1)/(n_perm+1)),
-              p_lt=(n_perm-sum(ct_perm>ct_obs)+1)/(n_perm+1)) %>%
-    ungroup() %>%
-    mutate(direction=p_gt < p_lt)%>%
-    mutate(p = p_gt * direction + p_lt * (direction == F))%>%
-    mutate(sig = p < p_tresh)%>%
-    mutate(sigval = as.integer(sig)*sign((direction-0.5)))
+  dat_perm <-
+    merge(dat_perm, dat_baseline[, c(FIRSTLABEL, SECONDLABEL, GROUP, COUNTVAR), with=F], by=c(FIRSTLABEL, SECONDLABEL, GROUP),
+          suffixes = c("_perm", "_obs"),all=T)
+  dat_perm[, ':='(ct_perm=replace(ct_perm, is.na(ct_perm), 0),
+                  ct_obs=replace(ct_obs, is.na(ct_obs), 0)
+                  )]
+
+
+  dat_stat = dat_perm[ , .(p_gt=ifelse(max(ct_obs)==0, 1,(sum(ct_perm>=ct_obs)+1)/(n_perm+1)),
+                  p_lt=(n_perm-sum(ct_perm>ct_obs)+1)/(n_perm+1)) , by=.(group, FirstLabel, SecondLabel)]
+
+  dat_stat[, direction := p_gt < p_lt]
+  dat_stat[, p := p_gt * direction + p_lt * (direction == F)]
+  dat_stat[, sig := p < p_tresh]
+  dat_stat[, sigval := as.integer(sig)*sign((direction-0.5))]
+  dat_stat
 }
