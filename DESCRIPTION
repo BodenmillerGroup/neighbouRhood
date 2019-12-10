@@ -1,7 +1,7 @@
 Package: neighbouRhood
 Type: Package
 Title: neighbouRhood analysis in R
-Version: 0.1.0
+Version: 0.2.0
 Author: Vito Zanotelli
 Maintainer: Vito <vito.zanotelli@uzh.ch>
 Description: Reproduces the neightbourhood analysis from the HistoCAT paper in R
