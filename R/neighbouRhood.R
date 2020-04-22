@@ -142,9 +142,7 @@ prepare_tables <- function(dat_obj, dat_rel, objname=DEFAULTOBJNAME,
 
   setnames(dat_rel, OBJID, SECONDOBJID)
   dat_rel[, (COUNTVAR) := 1]
-  dat_rel <- dat_rel[, c(GROUP, FIRSTOBJID, SECONDOBJID), with=F]
-
-
+  dat_rel <- dat_rel[, c(GROUP, FIRSTOBJID, SECONDOBJID, COUNTVAR), with=F]
   return(list(dat_obj, dat_rel))
 }
 
