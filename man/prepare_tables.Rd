@@ -6,10 +6,18 @@
 This data prepares CellProfiller style input tables into standardized tables
 optimized for the neightbourhood analysis.}
 \usage{
-prepare_tables(dat_obj, dat_rel, objname = DEFAULTOBJNAME,
-  relationship = DEFAULTRELATIONSHIP, col_imnr = IMGNR,
-  col_objnr = OBJNR, col_label = LABEL, col_group = NULL,
-  col_relationship = RELATIONSHIP, col_objname = OBJNAME)
+prepare_tables(
+  dat_obj,
+  dat_rel,
+  objname = DEFAULTOBJNAME,
+  relationship = DEFAULTRELATIONSHIP,
+  col_imnr = IMGNR,
+  col_objnr = OBJNR,
+  col_label = LABEL,
+  col_group = NULL,
+  col_relationship = RELATIONSHIP,
+  col_objname = OBJNAME
+)
 }
 \arguments{
 \item{dat_obj}{an object level data.table from cellprofiler}

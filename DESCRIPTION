@@ -1,7 +1,7 @@
 Package: neighbouRhood
 Type: Package
 Title: neighbouRhood analysis in R
-Version: 0.2.0
+Version: 0.3.0
 Author: Vito Zanotelli
 Maintainer: Vito <vito.zanotelli@uzh.ch>
 Description: Reproduces the neightbourhood analysis from the HistoCAT paper in R
@@ -9,7 +9,7 @@ License: AGPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: data.table, dplyr, dtplyr, magrittr
-RoxygenNote: 6.1.0
+RoxygenNote: 7.1.0
 Suggests: testthat,
     knitr,
     rmarkdown
