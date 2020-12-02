@@ -132,9 +132,9 @@ dat_perm = rbindlist(mclapply(1:n_perm, function(x){
 Visualize the distribution of the statistics in the permutations vs the observed baseline (red).
 For large datasets this might be really slow.
 ```{r}
-ggplot(dat_perm %>% filter(group==1), aes(x=ct)) +
+ggplot(dat_perm[group==1, ], aes(x=ct)) +
   facet_grid(FirstLabel~SecondLabel)+
-  geom_histogram() +
+  geom_histogram(bins = 30) +
   geom_vline(data=dat_baseline%>% filter(group==1),aes(xintercept=ct), color='red')
 ```
 
@@ -153,15 +153,12 @@ If an interaction comes as both significant avoiding as well as interacting, the
 
 Prepare the data
 ```{r}
-
-
 pmat = dcast(dat_p, 'FirstLabel ~ SecondLabel', value.var = 'sigval', fun.aggregate = sum,
              fill=0, drop=F)
 
 rname = pmat$FirstLabel
 
-pmat = pmat %>%
-  select(-c('FirstLabel')) %>%
+pmat = pmat[, -c('FirstLabel'), with=F] %>%
   as.matrix()
 
 row.names(pmat) <- rname

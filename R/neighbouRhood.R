@@ -208,6 +208,41 @@ aggregate_histo <- function(dat_nb){
   dat_temp[, .(ct=mean(ct)), by=.(group, FirstLabel, SecondLabel)]
 }
 
+
+
+#' Calculates patch detection neightbourhood statistics
+#'
+#' Calculates: What fraction of cells of type A have at least a given number of neighbours of type B?
+#'
+#' This was first proposed in Schulz D, Zanotelli VRT, Fischer JR, Schapiro D, Engler S, Lun XK, Jackson HW, Bodenmiller B.
+#' Simultaneous Multiplexed Imaging of mRNA and Proteins with Subcellular Resolution in Breast Cancer Tissue Samples by Mass Cytometry.
+#' Cell Syst. 2018 Jan 24;6(1):25-36.e5. doi: 10.1016/j.cels.2017.12.001
+#'
+#' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
+#' @param patch_size minimum number of neighbours to be considered a patch
+#' @return a statistics with columns group, Firstlabel, Secondlabel, ct
+#' @export
+aggregate_classic_patch<- function(dat_nb, patch_size){
+  dat_temp = dcast.data.table(dat_nb, paste0(GROUP, '+', FIRSTLABEL, '+`', FIRSTOBJID, '`~', SECONDLABEL),
+                              value.var = COUNTVAR,
+                              fun.aggregate=sum, fill=0) %>%
+    melt.data.table(id.vars=c(GROUP, FIRSTLABEL, FIRSTOBJID),
+                    variable.name=SECONDLABEL,
+                    value.name=COUNTVAR)
+
+  # Addition patch detection
+  dat_temp[, (COUNTVAR) := patch_size <= ct ]
+
+  dcast.data.table(dat_temp,paste0(GROUP, '+', FIRSTLABEL, '~', SECONDLABEL),
+                   value.var = COUNTVAR,
+                   fun.aggregate=mean, fill=0) %>%
+    melt.data.table(id.vars=c(GROUP, FIRSTLABEL),
+                    variable.name=SECONDLABEL,
+                    value.name=COUNTVAR)
+}
+
+
+
 #' Calculates p-values from the permutation data as well as the baseline
 #' @param dat_baseline a baseline statistics table calculated by running the aggregate_* function on the unpermuted data
 #' @param dat_perm the permuatation data
