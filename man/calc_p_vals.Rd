@@ -23,7 +23,7 @@ a table containing the results of the permutation test.
             SecondLabel: second label
             p_gt: fraction of permutations equal or bigger than baseline
             p_lt: fraction of permutations equal or less than baseline
-            direction: it the p_lt smaller than p_gt?
+            direction: is p_lt greater than p_gt?
             p: the smaller p value of p_gt and p_lt
             sig: it the p significant compared to the p_tresh?
             sigval: -1=if sig and direction==False, 0=if not sig, 1=if sig and direction==True

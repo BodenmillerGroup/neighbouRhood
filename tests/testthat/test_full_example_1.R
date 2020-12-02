@@ -69,6 +69,7 @@ test_that("Permutation statistics are calculated correctly", {
 #' check aggregate_classic
 dat_baseline = apply_labels(d[[1]], d[[2]]) %>%
   aggregate_classic()
+print(dat_baseline)
 
 test_that("Baseline statistics are calculated correctly with aggregate_classic", {
   expect_equal(dat_baseline[FirstLabel =='black' & SecondLabel == 'white', ct], 1)
@@ -111,4 +112,40 @@ test_that("Permutation statistics are calculated correctly", {
   # Check the directions are all correctly calculated
   expect_true(all(dat_p[, (p_gt < p_lt) == direction ]))
 
+})
+
+#' ------------------------------------
+#' check aggregate_classic_patch
+dat_baseline = apply_labels(d[[1]], d[[2]]) %>%
+  aggregate_classic_patch(patch=1)
+
+test_that("Baseline statistics are calculated correctly with aggregate_classic_patch", {
+  expect_equal(dat_baseline[FirstLabel =='black' & SecondLabel == 'white', ct], 1)
+  expect_equal(dat_baseline[FirstLabel =='white' & SecondLabel == 'black', ct], 1)
+  expect_equal(dat_baseline[FirstLabel =='white' & SecondLabel == 'white', ct], 0)
+  expect_equal(dat_baseline[FirstLabel =='black' & SecondLabel == 'black', ct], 0)
+  expect_equal(nrow(dat_baseline), 4)
+})
+
+
+dat_baseline = apply_labels(d[[1]], d[[2]]) %>%
+  aggregate_classic_patch(patch=2)
+
+test_that("Baseline statistics are calculated correctly with aggregate_classic_patch", {
+  expect_equal(dat_baseline[FirstLabel =='black' & SecondLabel == 'white', ct], 0)
+  expect_equal(dat_baseline[FirstLabel =='white' & SecondLabel == 'black', ct], 0)
+  expect_equal(dat_baseline[FirstLabel =='white' & SecondLabel == 'white', ct], 0)
+  expect_equal(dat_baseline[FirstLabel =='black' & SecondLabel == 'black', ct], 0)
+  expect_equal(nrow(dat_baseline), 4)
+})
+
+dat_baseline = apply_labels(d[[1]], d[[2]]) %>%
+  aggregate_classic_patch(patch=0)
+
+test_that("Baseline statistics are calculated correctly with aggregate_classic_patch", {
+  expect_equal(dat_baseline[FirstLabel =='black' & SecondLabel == 'white', ct], 1)
+  expect_equal(dat_baseline[FirstLabel =='white' & SecondLabel == 'black', ct], 1)
+  expect_equal(dat_baseline[FirstLabel =='white' & SecondLabel == 'white', ct], 1)
+  expect_equal(dat_baseline[FirstLabel =='black' & SecondLabel == 'black', ct], 1)
+  expect_equal(nrow(dat_baseline), 4)
 })
