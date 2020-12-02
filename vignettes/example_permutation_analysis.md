@@ -49,6 +49,7 @@ This package has several steps:
    Currently two aggregation statistics are implemented:
     - `aggregate_classic`: How many neightbours of type B does a cell of type A have on average?
     - `aggregate_histo`: How many many neightbours of type B has a cell of type A on average, given it has at least one neigthbour of type B? 
+    - `aggregate_classic_patch`: What fraction of cells of type A have at least a given number of neighbours of type B?
     
     Check the documentation to see the differences between the two.
     
