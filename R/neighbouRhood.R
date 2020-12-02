@@ -213,6 +213,11 @@ aggregate_histo <- function(dat_nb){
 #' Calculates patch detection neightbourhood statistics
 #'
 #' Calculates: What fraction of cells of type A have at least a given number of neighbours of type B?
+#'
+#' This was first proposed in Schulz D, Zanotelli VRT, Fischer JR, Schapiro D, Engler S, Lun XK, Jackson HW, Bodenmiller B.
+#' Simultaneous Multiplexed Imaging of mRNA and Proteins with Subcellular Resolution in Breast Cancer Tissue Samples by Mass Cytometry.
+#' Cell Syst. 2018 Jan 24;6(1):25-36.e5. doi: 10.1016/j.cels.2017.12.001
+#'
 #' @param dat_nb a neightbourhood table with the labels applied with 'apply_labels'
 #' @param patch_size minimum number of neighbours to be considered a patch
 #' @return a statistics with columns group, Firstlabel, Secondlabel, ct
@@ -224,10 +229,10 @@ aggregate_classic_patch<- function(dat_nb, patch_size){
     melt.data.table(id.vars=c(GROUP, FIRSTLABEL, FIRSTOBJID),
                     variable.name=SECONDLABEL,
                     value.name=COUNTVAR)
-  
+
   # Addition patch detection
   dat_temp[, (COUNTVAR) := patch_size <= ct ]
-  
+
   dcast.data.table(dat_temp,paste0(GROUP, '+', FIRSTLABEL, '~', SECONDLABEL),
                    value.var = COUNTVAR,
                    fun.aggregate=mean, fill=0) %>%
