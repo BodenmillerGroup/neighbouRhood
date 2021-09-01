@@ -1,6 +1,10 @@
 # neighbouRhood
 Adds an R implementation for the HistoCAT neightbourhood analysis (https://www.nature.com/articles/nmeth.4391) that runs from 'CellProfiler output' or 'CellProfiler output'-like data.
 
+## Deprecation note
+
+The `neighbouRhood` package has been deprecated. Please install the [imcRtools](https://github.com/BodenmillerGroup/imcRtools) package and use the [countInteractions](https://bodenmillergroup.github.io/imcRtools/reference/countInteractions.html) and [testInteractions](https://bodenmillergroup.github.io/imcRtools/reference/testInteractions.html) function to perform the neighbourhood analysis.
+
 ## Data requirements
 This require an edge representation of a neightbourhood graph as well as a table that associates each object with a label.
 
